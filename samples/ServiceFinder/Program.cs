@@ -14,7 +14,7 @@ namespace ServiceFinder
 
         static void Main(string[] args)
         {
-            string serviceType = "_workstation._tcp";
+            string serviceType = "_smartec_v1._tcp";
             if (args.Length >= 1)
             {
                 serviceType = args[0];

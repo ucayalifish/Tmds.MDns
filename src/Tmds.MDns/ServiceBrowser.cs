@@ -19,6 +19,8 @@ using System.Collections.Generic;
 using System.Net.NetworkInformation;
 using System.Threading;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 
 namespace Tmds.MDns
 {
@@ -88,6 +90,8 @@ namespace Tmds.MDns
         public SynchronizationContext SynchronizationContext { get; set; }
         public bool IsBrowsing { get; private set; }
         public ICollection<ServiceAnnouncement> Services { private set; get; }
+        
+        public ICollection<IPAddress> WatchedAddresses { get; set; }
 
         public event EventHandler<ServiceAnnouncementEventArgs> ServiceAdded;
         public event EventHandler<ServiceAnnouncementEventArgs> ServiceRemoved;
@@ -250,6 +254,18 @@ namespace Tmds.MDns
                         continue;
                     }
 
+                    if (WatchedAddresses != null && WatchedAddresses.Any())
+                    {
+                        var ipV4S = networkInterface.GetIPProperties().UnicastAddresses
+                            .Where(u => u.Address.AddressFamily == AddressFamily.InterNetwork)
+                            .Select(i => i.Address);
+                        var inCommon =    ipV4S.Intersect(WatchedAddresses);
+                        if (!inCommon.Any())
+                        {
+                            continue;
+                        }
+                    }
+                    
                     int index = networkInterface.GetIPProperties().GetIPv4Properties().Index;
                     NetworkInterfaceHandler interfaceHandler;
                     _interfaceHandlers.TryGetValue(index, out interfaceHandler);

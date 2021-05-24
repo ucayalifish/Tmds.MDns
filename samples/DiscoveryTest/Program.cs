@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Net;
 using Tmds.MDns;
 
 namespace DiscoveryTest
@@ -13,7 +15,8 @@ namespace DiscoveryTest
             serviceBrowser.ServiceAdded += onServiceAdded;
             serviceBrowser.ServiceRemoved += onServiceRemoved;
             serviceBrowser.ServiceChanged += onServiceChanged;
-
+            serviceBrowser.WatchedAddresses = new List<IPAddress> {IPAddress.Parse("192.168.2.2")};
+            
             Console.WriteLine("Browsing for type: {0}", serviceType);
             serviceBrowser.StartBrowse(serviceType);
             Console.ReadLine();
